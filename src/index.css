@@ -1,0 +1,29 @@
+@import url("https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=DM+Sans:wght@400;500;600&display=swap");
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html { scroll-behavior: smooth; }
+@keyframes marquee { to { transform: translateX(-50%); } }
+@keyframes drive { from { left: -60px; } to { left: 105%; } }
+@keyframes kenburns { from { transform: scale(1); } to { transform: scale(1.12); } }
+.shine::after { content: ""; position: absolute; inset: 0; transform: translateX(-120%) skewX(-20deg);
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.45), transparent); transition: transform .7s; }
+.shine:hover::after { transform: translateX(120%) skewX(-20deg); }
+.link-u { position: relative; }
+.link-u::after { content: ""; position: absolute; left: 0; bottom: -4px; height: 2px; width: 0; background: #E5B13A; transition: width .3s; }
+.link-u:hover::after { width: 100%; }
+@keyframes drift { from { transform: translateX(-60px); } to { transform: translateX(60px); } }
+@keyframes glow { 0%,100% { opacity: .75; } 50% { opacity: 1; } }
+.cloud { animation: drift 30s ease-in-out infinite alternate; }
+.cloud2 { animation: drift 40s ease-in-out infinite alternate-reverse; }
+.glow { animation: glow 6s ease-in-out infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.wheel { animation: spin .5s linear infinite; transform-box: fill-box; transform-origin: center; }
+@keyframes bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-9px); } }
+@keyframes ring { from { transform: scale(.3); opacity: .8; } to { transform: scale(1.6); opacity: 0; } }
+.has-deco > :not(.deco) { position: relative; z-index: 1; }
+@keyframes dash { to { stroke-dashoffset: -400; } }
+.dash { animation: dash 40s linear infinite; }
+.checker { height: 20px; background: conic-gradient(#05150f 25%, #E5B13A 0 50%, #05150f 0 75%, #E5B13A 0) 0 0 / 40px 40px; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } * { animation: none !important; } }
