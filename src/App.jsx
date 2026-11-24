@@ -18,7 +18,7 @@ const CONFIG = {
 };
 const NUMBERS = [
   { label: "94484 28266", raw: "919448428266" },
-  { label: "86602 73535", raw: "918660273535" },
+  { label: "94487 25872", raw: "919448725872" },
 ];
 const wa = (t = "Hi, I need a taxi.") => `https://wa.me/${CONFIG.phoneRaw}?text=${encodeURIComponent(t)}`;
 
@@ -31,6 +31,13 @@ const IMG = { sedan: "/images/sedan.jpg", suv: "/images/suv.jpg", tempo: "/image
 const TONES = ["from-[#1B5B42] to-[#09231A]", "from-[#2a7556] to-[#0d3a2b]", "from-[#0f4a35] to-[#3b8a66]", "from-[#164f39] to-[#09231A]"];
 const POS = ["20% 40%", "80% 30%", "50% 70%", "10% 60%", "90% 70%", "40% 20%"]; // different crops of the same photo
 
+/* Temple icon (lucide has none), same props as lucide icons */
+const TempleIcon = ({ size = 24, className = "", ...p }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden="true" {...p}>
+    <path d="M3 21h18" /><path d="M5 21v-6h14v6" /><path d="M3 15l3-4h12l3 4" /><path d="M8 11V8h8v3" /><path d="M7 8l2.5-3.5h5L17 8" /><path d="M12 4.5V2" /><path d="M10.5 21v-3a1.5 1.5 0 0 1 3 0v3" />
+  </svg>
+);
+
 /* ═══════ 3. CONTENT ═══════ */
 const ROUTES = [
   { to: "Mangaluru Airport", note: "Airport transfer", fare: "₹ —" },
@@ -42,7 +49,7 @@ const ROUTES = [
 const SERVICES = [
   { icon: Plane, t: "Airport transfer", d: "Pickup and drop at Mangaluru airport, timed to your flight." },
   { icon: TrainFront, t: "Railway pickup", d: "Puttur, Subramanya Road and Mangaluru stations." },
-  { icon: Mountain, t: "Temple trips", d: "Dharmasthala, Subramanya, Udupi, Tirupati and more." },
+  { icon: TempleIcon, t: "Temple trips", d: "Dharmasthala, Subramanya, Udupi, Tirupati and more." },
   { icon: Route, t: "Outstation", d: "Coorg, Chikmagaluru, Bengaluru, Mysuru and Wayanad." },
   { icon: PartyPopper, t: "Weddings and events", d: "Decorated cars and group vehicles for guests." },
   { icon: Stethoscope, t: "Hospital service", d: "Patient pickup and drop to Puttur and Mangaluru hospitals." },
@@ -84,11 +91,11 @@ const FAQS = [
 
 /* ═══════ HELPERS ═══════ */
 // Image that falls back to a gradient if the file is missing
-const Photo = ({ src, className = "", pos = "center", tone = 0, children }) => {
+const Photo = ({ src, alt = "", className = "", pos = "center", tone = 0, children }) => {
   const [ok, setOk] = useState(true);
   return (
     <div className={`relative overflow-hidden bg-gradient-to-br ${TONES[tone % TONES.length]} ${className}`}>
-      {ok && <img src={src} alt="" loading="lazy" style={{ objectPosition: pos }} onError={() => setOk(false)}
+      {ok && <img src={src} alt={alt} loading="lazy" style={{ objectPosition: pos }} onError={() => setOk(false)}
         className="absolute inset-0 h-full w-full object-cover transition-transform duration-1000 ease-out group-hover:scale-105" />}
       {children}
     </div>
@@ -201,10 +208,10 @@ function BookingModal() {
                 <div className="mt-5 grid gap-3.5">
                   <label className="text-sm font-medium">Pickup<input className={fld} value={f.pickup} onChange={set("pickup")} required /></label>
                   <label className="text-sm font-medium">Drop<input className={fld} placeholder="e.g. Mangaluru Airport" value={f.drop} onChange={set("drop")} required /></label>
-                  <div className="grid grid-cols-2 gap-3">
-                    <label className="text-sm font-medium">Date<input type="date" className={fld} value={f.date} onChange={set("date")} required /></label>
-                    <label className="text-sm font-medium">Vehicle<select className={fld} value={f.vehicle} onChange={set("vehicle")}>{FLEET.map((v) => <option key={v.name}>{v.name}</option>)}</select></label>
-                  </div>
+                  <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2">
+                <label className="block text-sm font-medium">Date<div className="relative mt-1"><input type="date" className={`${fld.replace("mt-1 ", "")} h-12 appearance-none text-left`} value={f.date} onChange={set("date")} required />{!f.date && <span className="pointer-events-none absolute left-3.5 top-1/2 hidden -translate-y-1/2 text-[15px] text-ink/40 [@media(hover:none)]:block">Select date</span>}</div></label>
+                <label className="block text-sm font-medium">Vehicle<select className={`${fld.replace("mt-1 ", "")} mt-1 h-12`} value={f.vehicle} onChange={set("vehicle")}>{FLEET.map((v) => <option key={v.name}>{v.name}</option>)}</select></label>
+              </div>
                 </div>
                 <button type="submit" className="shine relative mt-6 flex w-full items-center justify-center gap-2 overflow-hidden rounded-full bg-[#25a244] py-3.5 font-semibold text-white transition hover:bg-[#1e8a39] active:scale-95"><MessageCircle size={18} /> Send on WhatsApp</button>
               </form>
@@ -356,7 +363,7 @@ function Nav() {
     <header className={`fixed inset-x-0 top-0 z-40 transition-all duration-300 ${solid ? "bg-ink/95 shadow-lg backdrop-blur" : "bg-transparent"}`}>
       <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-3.5">
         <a href="#top" className="flex items-center gap-2.5 font-display text-lg font-bold text-white">
-          <img src={logo} alt="" className="h-11 w-auto drop-shadow-[0_2px_8px_rgba(255,194,26,.35)]" />{CONFIG.brand}
+          <img src={logo} alt={`${CONFIG.brand} logo`} className="h-11 w-auto drop-shadow-[0_2px_8px_rgba(255,194,26,.35)]" />{CONFIG.brand}
         </a>
         <nav className="hidden items-center gap-7 md:flex">
           {links.map(([l, h]) => <a key={l} href={h} className="link-u text-sm text-white/85 hover:text-white">{l}</a>)}
@@ -432,7 +439,7 @@ function Hero() {
             {CONFIG.hours} · Puttur, Dakshina Kannada
           </p>
           <BrandSlider />
-          <h1 className="mt-3 font-display text-[2.7rem] font-extrabold leading-[1.03] tracking-tight sm:text-7xl">
+          <h1 className="mt-3 font-display text-[2.7rem] font-extrabold leading-[1.03] tracking-tight sm:text-7xl"><span className="sr-only">Taxi service in Puttur, Dakshina Kannada: airport transfers, temple trips and outstation cabs. </span>
             Your ride from Puttur, <span className="bg-gradient-to-r from-[#FFE27A] via-rose to-[#B8860B] bg-clip-text text-transparent">on time</span>, every time.
           </h1>
           <p className="mt-6 max-w-xl text-lg text-white/80">Airport transfers, temple trips and outstation journeys in clean AC cars with local drivers and a fare agreed before you start.</p>
@@ -448,10 +455,10 @@ function Hero() {
           <div className="mt-5 grid gap-3.5">
             <label className="text-sm font-medium">Pickup<input className={`${fld} mt-1`} value={f.pickup} onChange={set("pickup")} required /></label>
             <label className="text-sm font-medium">Drop<input className={`${fld} mt-1`} placeholder="e.g. Mangaluru Airport" value={f.drop} onChange={set("drop")} required /></label>
-            <div className="grid grid-cols-2 gap-3">
-              <label className="text-sm font-medium">Date<input type="date" className={`${fld} mt-1`} value={f.date} onChange={set("date")} required /></label>
-              <label className="text-sm font-medium">Vehicle<select className={`${fld} mt-1`} value={f.vehicle} onChange={set("vehicle")}>{FLEET.map((v) => <option key={v.name}>{v.name}</option>)}</select></label>
-            </div>
+            <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2">
+                <label className="block text-sm font-medium">Date<div className="relative mt-1"><input type="date" className={`${fld.replace("mt-1 ", "")} h-12 appearance-none text-left`} value={f.date} onChange={set("date")} required />{!f.date && <span className="pointer-events-none absolute left-3.5 top-1/2 hidden -translate-y-1/2 text-[15px] text-ink/40 [@media(hover:none)]:block">Select date</span>}</div></label>
+                <label className="block text-sm font-medium">Vehicle<select className={`${fld.replace("mt-1 ", "")} mt-1 h-12`} value={f.vehicle} onChange={set("vehicle")}>{FLEET.map((v) => <option key={v.name}>{v.name}</option>)}</select></label>
+              </div>
           </div>
           <button type="submit" className="shine relative mt-5 flex w-full items-center justify-center gap-2 overflow-hidden rounded-full bg-[#25a244] py-3.5 font-semibold text-white transition hover:-translate-y-0.5 hover:bg-[#1e8a39] hover:shadow-xl">
             <MessageCircle size={18} /> Send on WhatsApp
@@ -462,11 +469,6 @@ function Hero() {
       <div className="absolute inset-x-0 bottom-0 h-20 overflow-hidden bg-[#05150f]" aria-hidden="true">
         <div className="absolute inset-x-0 top-1/2 border-t-2 border-dashed border-rose/60" />
         <div className="absolute top-1/2 -translate-y-[78%] animate-[drive_14s_linear_infinite]"><Taxi size={88} /></div>
-      </div>
-      <div className="pointer-events-none absolute inset-x-0 bottom-24 hidden md:block" aria-hidden="true">
-        {[["Dharmasthala", "6%", 0], ["Mangaluru Airport", "26%", 1.2], ["Kukke Subramanya", "50%", 0.6], ["Coorg", "70%", 1.8], ["Murudeshwar", "84%", 0.9]].map(([t, l, d]) => (
-          <span key={t} style={{ left: l, animationDelay: `${d}s` }} className="absolute bottom-0 flex animate-[bob_5s_ease-in-out_infinite] items-center gap-1.5 rounded-full border border-white/25 bg-black/25 px-3.5 py-1.5 text-xs text-white/90 backdrop-blur"><MapPin size={13} />{t}</span>
-        ))}
       </div>
     </section>
   );
@@ -529,32 +531,21 @@ const How = () => (
 const FleetRow = ({ v, i }) => {
   const [parked, setParked] = useState(false);
   const right = i % 2 === 1;
-  const fi = v.featured ?? 0;               // highlighted photo
-  const [active, setActive] = useState(fi); // photo currently shown big
-  const thumbs = v.photos.map((p, k) => ({ p, k })).filter(({ k }) => k !== active);
+  const fi = v.featured ?? 0; // index of the highlighted photo
+  const others = v.photos.filter((_, k) => k !== fi);
   return (
     <div>
       <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
+        {/* photos drive in from the side */}
         <motion.div initial={{ x: right ? 160 : -160, skewX: right ? 8 : -8, opacity: 0 }} whileInView={{ x: 0, skewX: 0, opacity: 1 }}
           viewport={{ once: true, margin: "-80px" }} transition={{ type: "spring", stiffness: 60, damping: 15 }}
-          className={right ? "lg:order-2" : ""}>
-          {/* main photo */}
-          <div className="group relative">
-            <Photo src={v.photos[active]} tone={i} className="aspect-[4/3] rounded-3xl shadow-2xl ring-4 ring-rose" />
-            <span className="absolute left-4 top-4 rounded-full bg-rose px-3 py-1 text-xs font-bold text-ink shadow">{v.tag}</span>
-            {v.featured !== undefined && active === fi && (
-              <span className="absolute right-4 top-4 flex items-center gap-1 rounded-full bg-ink px-3 py-1 text-xs font-bold text-rose shadow"><Star size={12} fill="currentColor" /> Featured</span>
-            )}
+          className={`group relative pb-8 pr-6 ${right ? "lg:order-2" : ""}`}>
+          <Photo src={v.photos[fi]} alt={`${v.name} taxi on rent in Puttur`} tone={i} className={`aspect-[4/3] rounded-3xl shadow-2xl ${v.featured !== undefined ? "ring-4 ring-rose" : ""}`} />
+          <div className="absolute bottom-0 right-0 flex gap-2">
+            {others.map((p, k) => <Photo key={p} src={p} alt={`${v.name} taxi in Puttur`} tone={i + k + 1} className={`aspect-[4/3] rounded-xl border-4 border-white shadow-xl ${others.length === 1 ? "w-40 sm:w-56" : "w-24 sm:w-32 lg:w-36"}`} />)}
           </div>
-          {/* other photos: equal size, fully visible, click to swap */}
-          <div className="mt-3 grid gap-3" style={{ gridTemplateColumns: `repeat(${thumbs.length}, minmax(0, 1fr))` }}>
-            {thumbs.map(({ p, k }) => (
-              <button key={p} type="button" onClick={() => setActive(k)} aria-label="Show this photo"
-                className="group overflow-hidden rounded-2xl shadow-lg ring-2 ring-white transition duration-300 hover:-translate-y-1 hover:ring-rose">
-                <Photo src={p} tone={i + k + 1} className={`w-full rounded-2xl ${thumbs.length === 1 ? "aspect-[21/9]" : "aspect-[16/10]"}`} />
-              </button>
-            ))}
-          </div>
+          <span className="absolute left-4 top-4 rounded-full bg-rose px-3 py-1 text-xs font-bold text-ink shadow">{v.tag}</span>
+          {v.featured !== undefined && <span className="absolute right-10 top-4 flex items-center gap-1 rounded-full bg-ink px-3 py-1 text-xs font-bold text-rose shadow"><Star size={12} fill="currentColor" /> Featured</span>}
         </motion.div>
         <Reveal delay={0.15}>
           <span className="font-display text-7xl font-extrabold leading-none text-brand/15">0{i + 1}</span>
@@ -569,6 +560,7 @@ const FleetRow = ({ v, i }) => {
           <Btn href="#" onClick={(e) => { e.preventDefault(); openBook({ vehicle: v.name }); }} variant="dark" className="mt-7">Book {v.name} <ArrowRight size={16} /></Btn>
         </Reveal>
       </div>
+      {/* the vehicle drives in along the road and parks */}
       <div className="relative mt-6 h-16 overflow-hidden" aria-hidden="true">
         <div className="absolute inset-x-0 bottom-3 border-t-2 border-dashed border-ink/25" />
         <motion.div initial={{ left: "-20%" }} whileInView={{ left: "70%" }} viewport={{ once: true }} transition={{ duration: 2.6, ease: [0.22, 0.8, 0.3, 1] }}
@@ -595,7 +587,7 @@ const TirupatiPackage = () => (
       <Reveal delay={0.1}>
         <div className="mt-12 grid overflow-hidden rounded-3xl bg-white shadow-xl ring-1 ring-ink/10 lg:grid-cols-[1.05fr_.95fr]">
           <div className="group relative min-h-[280px]">
-            <Photo src={IMG.tirupati} className="!absolute inset-0">
+            <Photo src={IMG.tirupati} alt="Tirumala Venkateswara temple, Tirupati tour package from Puttur" className="!absolute inset-0">
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
               <span className="absolute left-5 top-5 rounded-full bg-rose px-3.5 py-1 text-xs font-bold text-ink">Pilgrimage package</span>
               <div className="absolute inset-x-0 bottom-0 flex items-center gap-3 p-6 text-white">
@@ -631,7 +623,7 @@ const Destinations = () => (
       {DEST.map((d, i) => (
         <Reveal key={d.t} delay={(i % 3) * 0.08} className={d.big ? "sm:col-span-2" : ""}>
           <a href={wa(`Hi, I'm interested in a trip to ${d.t}.`)} onClick={(e) => { e.preventDefault(); openBook({ drop: d.t }); }} className="group block h-full rounded-2xl">
-            <Photo src={d.img} tone={i} pos={POS[i % POS.length]} className="h-full rounded-2xl"><MapPin className="absolute right-4 top-4 text-white/15" size={84} strokeWidth={1.2} />
+            <Photo src={d.img} alt={`${d.t} taxi trip from Puttur`} tone={i} pos={POS[i % POS.length]} className="h-full rounded-2xl"><MapPin className="absolute right-4 top-4 text-white/15" size={84} strokeWidth={1.2} />
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
               <div className="absolute inset-x-0 bottom-0 p-5">
                 <h3 className="font-display text-xl font-bold">{d.t}</h3>
@@ -714,8 +706,8 @@ const CTA = () => (
 
 const Footer = () => (
   <footer className="bg-ink pb-24 pt-16 text-white/75 md:pb-14"><div className="mx-auto grid max-w-6xl gap-10 px-5 md:grid-cols-3">
-    <div><img src={logo} alt="" className="h-14 w-auto" /><p className="mt-3 font-display text-xl font-bold text-white">{CONFIG.brand}</p><p className="mt-2 text-[15px] text-rose">Shri Devi Tours And Travels<br />Bhoomi Tours And Travels</p><p className="mt-3 max-w-xs text-[15px]">Taxi service for airport transfers, pilgrimages and outstation trips from Puttur.</p></div>
-    <div className="text-[15px]"><p className="font-semibold text-white">Contact</p><p className="mt-3">+91 94484 28266</p><p>+91 86602 73535</p><p><a href={`mailto:${CONFIG.email}`} className="hover:text-rose">{CONFIG.email}</a></p><p className="mt-2">{CONFIG.address}</p><p className="mt-2">{CONFIG.hours}</p></div>
+    <div><img src={logo} alt={`${CONFIG.brand} logo`} className="h-14 w-auto" /><p className="mt-3 font-display text-xl font-bold text-white">{CONFIG.brand}</p><p className="mt-2 text-[15px] text-rose">Shri Devi Tours And Travels<br />Bhoomi Tours And Travels</p><p className="mt-3 max-w-xs text-[13px] text-white/50">Taxi service in Puttur for Mangaluru airport, Dharmasthala, Kukke Subramanya, Udupi, Murudeshwar, Coorg and Tirupati trips.</p><p className="mt-3 max-w-xs text-[15px]">Taxi service for airport transfers, pilgrimages and outstation trips from Puttur.</p></div>
+    <div className="text-[15px]"><p className="font-semibold text-white">Contact</p><p className="mt-3">+91 94484 28266</p><p>+91 94487 25872</p><p><a href={`mailto:${CONFIG.email}`} className="hover:text-rose">{CONFIG.email}</a></p><p className="mt-2">{CONFIG.address}</p><p className="mt-2">{CONFIG.hours}</p></div>
     <div className="overflow-hidden rounded-2xl ring-1 ring-white/10"><iframe title="Map" className="h-44 w-full" loading="lazy" src="https://www.google.com/maps?q=Puttur,+Karnataka&output=embed" /></div>
   </div><p className="mx-auto mt-10 max-w-6xl px-5 text-sm text-white/45">© {new Date().getFullYear()} {CONFIG.brand} · Place photos from Wikimedia Commons</p></footer>
 );

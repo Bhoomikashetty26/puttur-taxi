@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://puttur-taxi.vercel.app/sitemap.xml
